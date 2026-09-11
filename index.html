@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Send Me an Anonymous Message</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      box-sizing: border-box;
+      font-size: 14px;
+      resize: none;
+    }
+    button {
+      margin-top: 15px;
+      background-color: #ff2a5f;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #e02450;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Send me an anonymous message! 🤫</h2>
+    <textarea id="msgInput" placeholder="Write your secret message here..."></textarea>
+    <button id="sendBtn">Send Message</button>
+  </div>
+
+  <!-- Firebase CDN Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Aapke Firebase Credentials
+    const firebaseConfig = {
+      apiKey: "AIzaSyCbmsgGly6QJxOBWEU4HM2Z-IHnk8fItbA",
+      authDomain: "my-ngl-app.firebaseapp.com",
+      projectId: "my-ngl-app",
+      storageBucket: "my-ngl-app.firebasestorage.app",
+      messagingSenderId: "324504278157",
+      appId: "1:324504278157:web:28292e1a8c21ccb1f23ec4",
+      measurementId: "G-D0JL753HX5"
+    };
+
+    // Firebase Initialize karein
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Message Send karne ka Function
+    document.getElementById("sendBtn").addEventListener("click", function() {
+      const msgText = document.getElementById("msgInput").value;
+
+      if (msgText.trim() === "") {
+        alert("Pehle message toh likhein!");
+        return;
+      }
+
+      // Firestore database mein message save karna
+      db.collection("messages").add({
+        message: msgText,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(() => {
+        alert("Message successfully bhej diya gaya! 🤫");
+        document.getElementById("msgInput").value = "";
+      })
+      .catch((error) => {
+        console.error("Error sending message: ", error);
+        alert("Message bhejney mein masla aaya, dobara try karein.");
+      });
+    });
+  </script>
+
+</body>
+</html>
