@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Anonymous Inbox 📬</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    #messagesContainer {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .msg-card {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      border-left: 5px solid #ff2a5f;
+    }
+    .msg-text {
+      font-size: 16px;
+      color: #222;
+      margin-bottom: 8px;
+      word-wrap: break-word;
+    }
+    .msg-time {
+      font-size: 12px;
+      color: #888;
+      text-align: right;
+    }
+    .no-msg {
+      text-align: center;
+      color: #777;
+      font-size: 16px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Inbox 📬</h1>
+  <div id="messagesContainer">
+    <p class="no-msg">Loading messages...</p>
+  </div>
+
+  <!-- Firebase CDN Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Aapke Firebase Credentials
+    const firebaseConfig = {
+      apiKey: "AIzaSyCbmsgGly6QJxOBWEU4HM2Z-IHnk8fItbA",
+      authDomain: "my-ngl-app.firebaseapp.com",
+      projectId: "my-ngl-app",
+      storageBucket: "my-ngl-app.firebasestorage.app",
+      messagingSenderId: "324504278157",
+      appId: "1:324504278157:web:28292e1a8c21ccb1f23ec4",
+      measurementId: "G-D0JL753HX5"
+    };
+
+    // Firebase Initialize
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const container = document.getElementById("messagesContainer");
+
+    // Real-time messages retrieve karna
+    db.collection("messages").orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) => {
+        container.innerHTML = "";
+
+        if (snapshot.empty) {
+          container.innerHTML = `<p class="no-msg">Koi message nahi aaya abhi tak! 📭</p>`;
+          return;
+        }
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const time = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleString() : "Just now";
+
+          const card = document.createElement("div");
+          card.className = "msg-card";
+          card.innerHTML = `
+            <div class="msg-text">💬 ${data.message}</div>
+            <div class="msg-time">🕒 ${time}</div>
+          `;
+          container.appendChild(card);
+        });
+      }, (error) => {
+        console.error("Error fetching messages:", error);
+        container.innerHTML = `<p class="no-msg">Messages load karne mein masla aaya.</p>`;
+      });
+  </script>
+
+</body>
+</html>
